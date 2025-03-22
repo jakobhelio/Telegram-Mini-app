@@ -1,6 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiProvider } from 'wagmi'
-import { arbitrum, mainnet } from 'wagmi/chains' // Ändere @wagmi/chains zu wagmi/chains
+import { arbitrum, mainnet } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
@@ -14,7 +14,7 @@ const projectId = 'c713bf24fd73d14a9c78ba77af7fc727'
 const metadata = {
   name: 'Memecoin Sniper Bot',
   description: 'AppKit Example',
-  url: 'https://jakobhelio.github.io/Telegram-Mini-app',
+  url: 'https://jakobhelio.github.io/Telegram-Mini-app', // Muss mit der gehosteten URL übereinstimmen
   icons: ['https://assets.reown.com/reown-profile-pic.png']
 }
 
