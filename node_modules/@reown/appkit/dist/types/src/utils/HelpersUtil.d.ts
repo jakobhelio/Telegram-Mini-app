@@ -1,0 +1,23 @@
+import type { SessionTypes } from '@walletconnect/types';
+import type { NamespaceConfig } from '@walletconnect/universal-provider';
+import type { CaipNetwork, CaipNetworkId, ChainNamespace } from '@reown/appkit-common';
+export declare const WcHelpersUtil: {
+    getMethodsByChainNamespace(chainNamespace: ChainNamespace): string[];
+    createNamespaces(caipNetworks: CaipNetwork[]): NamespaceConfig;
+    resolveReownName: (name: string) => Promise<string | false>;
+    getChainsFromNamespaces(namespaces?: SessionTypes.Namespaces): CaipNetworkId[];
+    isSessionEventData(data: unknown): data is WcHelpersUtil.SessionEventData;
+};
+export declare namespace WcHelpersUtil {
+    type SessionEventData = {
+        id: string;
+        topic: string;
+        params: {
+            chainId: string;
+            event: {
+                data: unknown;
+                name: string;
+            };
+        };
+    };
+}
