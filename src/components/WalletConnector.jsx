@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTonConnectUI, useTonAddress } from "@tonconnect/ui-react";
 import { useAccount, useDisconnect } from 'wagmi';
 
@@ -10,10 +10,32 @@ const WalletConnector = () => {
 
   // Telegram WebApp Integration
   const tg = window.Telegram.WebApp;
+  const [theme, setTheme] = useState({});
 
   useEffect(() => {
+    // Initialisiere Telegram WebApp
     tg.expand();
     tg.ready();
+
+    // Hole das Telegram-Theme
+    const themeParams = tg.themeParams;
+    setTheme({
+      bgColor: themeParams.bg_color || '#1a1a1a',
+      textColor: themeParams.text_color || '#ffffff',
+      buttonColor: themeParams.button_color || '#4299e1',
+      buttonTextColor: themeParams.button_text_color || '#ffffff',
+    });
+
+    // Aktiviere den Hauptbutton von Telegram
+    tg.MainButton.setText('Close');
+    tg.MainButton.show();
+    tg.MainButton.onClick(() => {
+      tg.close();
+    });
+
+    // Passe die App-Größe an
+    document.documentElement.style.height = '100%';
+    document.body.style.height = '100%';
   }, []);
 
   // Sende die Wallet-Adresse an den Bot, wenn eine Verbindung hergestellt wird
@@ -48,50 +70,75 @@ const WalletConnector = () => {
   };
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-6 bg-white rounded-lg shadow-lg max-w-md w-full">
-      <h1 className="text-3xl font-bold text-gray-800">Memecoin Sniper Pro™ Wallet Connector</h1>
-      <p className="text-gray-600 text-center">
-        Verbinde deine Wallet, um mit dem Memecoin Sniper Pro™ Bot zu interagieren.
+    <div
+      className="flex flex-col items-center p-6 space-y-6 w-full h-full"
+      style={{ backgroundColor: theme.bgColor, color: theme.textColor }}
+    >
+      <h1 className="text-2xl font-bold text-center">
+        Memecoin Sniper Pro™
+      </h1>
+      <p className="text-sm text-center opacity-80">
+        Verbinde deine Wallet, um mit dem Bot zu interagieren.
       </p>
 
       {/* TON Wallet Verbindung */}
-      <div className="w-full">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">TON-kompatible Wallets</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="w-full wallet-card">
+        <h2 className="text-lg font-semibold mb-2">TON Wallets</h2>
+        <p className="text-xs opacity-70 mb-4">
           Unterstützt Tonkeeper, Bitget Wallet, Trust Wallet und mehr.
         </p>
         <button
           onClick={handleTonConnect}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+          className="w-full py-3 px-4 rounded-lg text-sm font-medium"
+          style={{
+            backgroundColor: theme.buttonColor,
+            color: theme.buttonTextColor,
+            animation: 'pulse 2s infinite',
+          }}
         >
           Verbinde TON Wallet
         </button>
       </div>
 
       {/* EVM Wallet Verbindung */}
-      <div className="w-full">
-        <h2 className="text-lg font-semibold text-gray-700 mb-2">EVM-kompatible Wallets</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="w-full wallet-card">
+        <h2 className="text-lg font-semibold mb-2">EVM Wallets</h2>
+        <p className="text-xs opacity-70 mb-4">
           Unterstützt MetaMask, Bitget Wallet, Binance Wallet und mehr.
         </p>
         {isConnected ? (
           <button
             onClick={handleEvmDisconnect}
-            className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition"
+            className="w-full py-3 px-4 rounded-lg text-sm font-medium bg-red-600 text-white"
+            style={{ animation: 'pulse 2s infinite' }}
           >
             EVM Wallet trennen
           </button>
         ) : (
-          <appkit-button />
+          <appkit-button
+            style={{
+              '--button-bg': theme.buttonColor,
+              '--button-text': theme.buttonTextColor,
+              animation: 'pulse 2s infinite',
+            }}
+          />
         )}
       </div>
 
       {/* Statusanzeige */}
       {(tonAddress || evmAddress) && (
-        <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-md w-full">
-          <p className="font-semibold">Verbunden!</p>
-          {tonAddress && <p>TON Adresse: {tonAddress.slice(0, 6)}...{tonAddress.slice(-4)}</p>}
-          {evmAddress && <p>EVM Adresse: {evmAddress.slice(0, 6)}...{evmAddress.slice(-4)}</p>}
+        <div className="status-box">
+          <p className="font-semibold text-white">Verbunden!</p>
+          {tonAddress && (
+            <p className="text-xs text-white">
+              TON Adresse: {tonAddress.slice(0, 6)}...{tonAddress.slice(-4)}
+            </p>
+          )}
+          {evmAddress && (
+            <p className="text-xs text-white">
+              EVM Adresse: {evmAddress.slice(0, 6)}...{evmAddress.slice(-4)}
+            </p>
+          )}
         </div>
       )}
     </div>
